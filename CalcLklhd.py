@@ -36,7 +36,6 @@ def CalcLklhd(h,A0,h0,S,n,w,L,t,sigS,sigh,sigq,dA,Delta,DeltaA,qhatv,Qvbar):
     N=nR*(nt-1); # total number of "equations" / constraints
     M=nR*nt;    
 
-#    [dQdx,dAdt]= FloodplainMassBal(h,t,L,Q,dA,F,Delta)
     [dQdx,dAdt]= ChannelMassBal(h,t,L,Q,dA,Delta)
     dQdxv=dQdx.reshape(N,1)
 
