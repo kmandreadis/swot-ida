@@ -3,16 +3,22 @@
 
 clear all
 
-ObsFile='dat/SWOTobs.txt';
+addpath ./src %directory where algorithm scripts are located
+
+RunDir='./AirSWOTSac'; %directory where inputs located, & outputs are saved
+
+ObsFile=[RunDir '/SWOTobs.txt'];
 [D,Obs] = ReadObs(ObsFile);
 
-ParamFile='dat/params.txt';
+ParamFile=[RunDir '/params.txt'];
 [Chain,Prior,jmp,R] = ReadParams(ParamFile,D);
 
-TruthFile='dat/truth.txt';
+TruthFile=[RunDir '/truth.txt'];
 Truth=ReadTruth (TruthFile,D);
 
 [Obs] = CalcdA(D,Obs);
+
+[Obs,Prior] = GetCovMats(D,Obs,Prior);
 
 Chain=MetropolisCalculations(Prior,D,Obs,jmp,Chain,R);
 
@@ -22,6 +28,8 @@ Err=CalcErrorStats(Truth,Prior,Estimate);
 
 MakeFigs(D,Truth,Prior,Chain,Estimate,Err);
 
-WriteSummary (R,Err,Estimate);
+WriteSummary (R,Err,Estimate,RunDir);
 
-save('RunData.mat')
+save([RunDir '/RunData.mat'])
+
+rmpath ./src
