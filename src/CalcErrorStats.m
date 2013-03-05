@@ -19,9 +19,19 @@ RMSQPost=sqrt(mean( (E.QhatPost'-Truth.Q').^2 ));
 RMSQPrior=sqrt(mean( (E.QhatPrior'-Truth.Q').^2 ));
 ratio=((RMSQPrior-RMSQPost)./RMSQPrior)*100;
 
-fprintf('RMS for Q prior: %.1f, %.1f, %.1f %.1f %.1f %.1f \n', RMSQPrior)
-fprintf('RMS for Q posterior: %.1f, %.1f, %.1f %.1f %.1f %.1f \n', RMSQPost)
-fprintf('Ratio: %.1f, %.1f, %.1f %.1f %.1f %.1f \n', ratio)
+nR=length(E.A0hat);
+
+fprintf('RMS for Q prior: ');
+for i=1:nR,
+    fprintf('%.1f,', RMSQPrior(i))
+end
+fprintf('\n');
+
+fprintf('RMS for Q posterior: ')
+for i=1:nR,
+    fprintf('%.1f, ', RMSQPost(i))
+end
+
 fprintf('\n')
 
 Err.QRelErrPrior=RMSQPrior./mean(Truth.Q');

@@ -59,9 +59,11 @@ for i=1:D.nR,
 end
 
 Qbar=squeeze(mean(mean(C.thetaQ)));
-% 
-% figure(5)
-% plot(Qbar); grid on;
+
+figure(5)
+plot(Qbar); grid on;
+xlabel('Iteration')
+ylabel('Space & time average of discharge, m^3/s')
 
 
 figure(6)
