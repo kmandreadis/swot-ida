@@ -15,7 +15,7 @@ disp(['Relative Uncertainty in n: ' num2str(mean(E.stdnPost'./E.nhat'))])
 disp(['RMS for q posterior:' num2str(RMSq)])
 disp(['Relative Uncertainty in q: ' num2str(mean(E.stdqpost./E.qhat))])
 
-RMSQPost=sqrt(mean( (E.QhatPost'-Truth.Q').^2 ));
+RMSQPost=sqrt(mean( (E.QhatPostf'-Truth.Q').^2 ));
 RMSQPrior=sqrt(mean( (E.QhatPrior'-Truth.Q').^2 ));
 ratio=((RMSQPrior-RMSQPost)./RMSQPrior)*100;
 

@@ -24,6 +24,8 @@ Chain=MetropolisCalculations(Prior,D,Obs,jmp,Chain,R);
 
 [Estimate,Chain]=CalculateEstimates (Chain,D,Obs,Prior);
 
+[Estimate] = FilterEstimate(Estimate,Chain,D,Obs);
+
 Err=CalcErrorStats(Truth,Prior,Estimate);
 
 MakeFigs(D,Truth,Prior,Chain,Estimate,Err);

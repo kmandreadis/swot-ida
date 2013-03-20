@@ -62,12 +62,10 @@ Qbar=squeeze(mean(mean(C.thetaQ)));
 
 figure(5)
 plot(Qbar); grid on;
-xlabel('Iteration')
-ylabel('Space & time average of discharge, m^3/s')
 
 
 figure(6)
-h=plot(D.t,E.QhatPost',D.t,Truth.Q,'--','LineWidth',2); 
+h=plot(D.t,E.QhatPostf',D.t,Truth.Q,'--','LineWidth',2); 
 Co=get(0,'DefaultAxesColorOrder');
 for i=1:D.nR,
     set(h(D.nR+i),'Color',Co(i,:));
