@@ -18,7 +18,10 @@ if Prior.meanq==-1,
     pu3=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 end
 
-%6.2) The loop
+%6.2) Validity check on A0 min: ensure no A=A0+dA values
+jmp.A0min=max(jmp.A0min, ceil(-min(Obs.dA,[],2)) );
+
+%6.3) The loop
 tic
 
 jmp.stdA0=jmp.stdA0burn;
@@ -37,7 +40,7 @@ for i=1:C.N,
     end
     
     thetavA0=thetauA0+jmp.stdA0.*R.z1(:,i);   
-    thetavA0(thetavA0<jmp.A0min)=jmp.A0min;
+    thetavA0(thetavA0<jmp.A0min)=jmp.A0min(thetavA0<jmp.A0min);
     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
     fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);    
 
