@@ -1,7 +1,7 @@
 Chain length
-100000
+10000
 Burn in
-20000
+2000
 Random Number Seed
 9
 Estimate lateral inflows (true or false) <- use "true" at your own risk

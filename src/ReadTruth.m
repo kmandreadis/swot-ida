@@ -10,12 +10,33 @@ fgetl(fid); dAAll=fscanf(fid,'%f',D.nR*D.nt); fscanf(fid,'\n');
 for i=1:D.nR,
     Truth.Q(i,:)=QtAll( (i-1)*D.nt+1 : i*D.nt,:);
 end
+
+if feof(fid),
+    fclose(fid);
+    return
+end
+
 for i=1:D.nR,
     Truth.dA(i,:)=dAAll( (i-1)*D.nt+1 : i*D.nt,:);
 end
+Truth.dAv=reshape(Truth.dA',D.nR*D.nt,1);
+
+if feof(fid),
+    fclose(fid);
+    return
+end
+for i=1:D.nR,
+    Truth.h(i,:)=hAll( (i-1)*D.nt+1 : i*D.nt,:);
+end
+
+Truth.hv=reshape(Truth.h',D.nR*D.nt,1);
+
+for i=1:D.nR,
+    Truth.W(i,:)=WAll( (i-1)*D.nt+1 : i*D.nt,:);
+end
+
+Truth.Wv=reshape(Truth.W',D.nR*D.nt,1);
 
 fclose(fid);
-
-Truth.dAv=reshape(Truth.dA',D.nR*D.nt,1);
 
 return
