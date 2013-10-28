@@ -23,5 +23,7 @@ end
 
 Qhatfv=mean(xplus(:,C.Nburn:C.N),2);
 Estimate.QhatPostf=reshape(Qhatfv,D.nt,D.nR)';
+Ppostv=diag( (eye(D.nt*D.nR)-K*H)*P );
+Estimate.QhatPostfUnc=reshape( sqrt(Ppostv), D.nt,D.nR)';
 
 return
