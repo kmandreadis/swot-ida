@@ -79,6 +79,12 @@ plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
 xlabel('Reach'); ylabel('Relative error');
 legend('Prior','Posterior',0);
 
+figure(8)
+plot(Qbar,C.LogLike,'o')
+set(gca,'FontSize',14)
+xlabel('Average discharge, m^3/s')
+ylabel('Log of likelihood')
+
 
 % figure(7)
 % plot(mean(C.thetaA0(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
