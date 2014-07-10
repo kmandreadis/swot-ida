@@ -1,6 +1,6 @@
 function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R)
 
-[Delta,DeltaA,B,C,~,thetaun,thetauq,thetauQb,R]=InitializeMetropolis (D,C,Prior,R);
+[Delta,DeltaA,B,C,thetauA0,thetaun,thetauq,thetauQb,R]=InitializeMetropolis (D,C,Prior,R);
 
 %6.1) initial probability calculations
 thetauA0=( Prior.meanQbase.*Prior.meann.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
@@ -47,35 +47,35 @@ for i=1:C.N,
     thetavQb=thetauQb+jmp.stdQb.*R.z1(1,i);   
     thetavQb(thetavQb<jmp.Qbmin)=jmp.Qbmin(thetavQb<jmp.Qbmin); %could scalarize this line, but fine as is
     pv4=prod(lognpdf(thetavQb,mu,sigma));
-    thetavA0=( thetavQb.*thetaun.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
+    thetavA0=( thetavQb.*Prior.meann.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
+    
+    fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);     
+    
+    
     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
     
-    fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);                         
+    
 
     MetRatio=exp(fv-fu)*pv1/pu1*exp( log(pv4) - log(pu4) );
     if MetRatio>R.u1(i),
         C.n_a1=C.n_a1+1; %increment
-        thetauQb=thetavQb;pu4=pv4; fu=fv; %update u->v     
-        thetauA0=thetavA0; pu1=pv1; %these are sort of "diagnostics"
+        thetauA0=thetavA0; fu=fv; pu1=pv1; %update u->v     
     end    
     C.thetaA0(:,i)=thetauA0;
-    C.thetaQb(i)=thetauQb;
     
     %n
     thetavn=thetaun+jmp.stdn.*R.z2(:,i);
     thetavn(thetavn<jmp.nmin)=jmp.nmin;
     pv2=exp(-0.5.*(thetavn-Prior.meann)'*diag(Prior.stdn.^-2)*(thetavn-Prior.meann));
+    fv=CalcLklhd(Obs,thetauA0,thetavn,D,Prior,Delta,DeltaA,B,thetauq);    
     
-    thetavA0=( thetauQb.*thetavn.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
-    pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));        
-    
-    fv=CalcLklhd(Obs,thetavA0,thetavn,D,Prior,Delta,DeltaA,B,thetauq);    
-    
-    MetRatio=exp(fv-fu)*pv2/pu2*pv1/pu1;
+    Qb=1./thetaun.*thetavA0.^(5/3).*Obs.w(:,1).^(-2/3).*Obs.S(:,1).^0.5;
+    pv4=prod(lognpdf(Qb,mu,sigma));    
+
+    MetRatio=exp(fv-fu)*pv2/pu2*exp( log(pv4) - log(pu4) );
     if MetRatio>R.u2(i),
         C.n_a2=C.n_a2+1; %increment
-        thetaun=thetavn; fu=fv; pu2=pv2; %update u->v  
-        thetauA0=thetavA0; pu1=pv1; %these are sort of "diagnostics"
+        thetaun=thetavn; fu=fv; pu2=pv2; %update u->v     
     end    
     C.thetan(:,i)=thetaun;    
     
@@ -99,7 +99,7 @@ end
 toc
 
 
-disp(['Q base: Acceptance rate =' num2str(C.n_a1/C.N*100) ' pct.'])
+disp(['A0: Acceptance rate =' num2str(C.n_a1/C.N*100) ' pct.'])
 disp(['n: Acceptance rate =' num2str(C.n_a2/C.N*100) ' pct.'])
 if C.Estimateq,
     disp(['q: Acceptance rate =' num2str(C.n_a3/C.N*100) ' pct.'])

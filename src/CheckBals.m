@@ -13,34 +13,38 @@ dQdxtv=Delta*Qtv;
 
 dQdxcv=Delta*(Qv);
 
-figure; 
+figure(9) 
 minvalt=min([min(dQdxv) min(dAdtv) min(dQdxtv)]);
 maxvalt=max([max(dQdxv) max(dAdtv) max(dQdxtv)]);
 
 subplot(211)
-plot(dQdxtv,-dAdtv,'o',[minvalt maxvalt],[minvalt maxvalt])
+plot(dQdxtv,-dAdtv,'o',[minvalt maxvalt],[minvalt maxvalt],'LineWidth',2)
 xlabel('dQ/dx, m^2/s')
 ylabel('-dA/dt, m^2/s')
 title('True Q')
 subplot(212)
-plot(dQdxv,-dAdtv,'o',dQdxcv,-dAdtv,'o',[minvalt maxvalt],[minvalt maxvalt])
+plot(dQdxv,-dAdtv,'o',dQdxcv,-dAdtv,'o',[minvalt maxvalt],[minvalt maxvalt],'LineWidth',2)
 xlabel('dQ/dx, m^2/s')
 ylabel('-dA/dt, m^2/s')
 title('Manning approximate Q')
 
-figure;
+figure(10)
 minval=min([min(Qtv) min(Qv)]);
 maxval=max([max(Qtv) max(Qv)]);
-% plot(Qtv,Qv,'o',[minval maxval],[minval maxval])
-plot(Qtv,Qv,'o',[minval maxval],[minval maxval])
-
-[f,dQdxv,dAdtv]=CalcLklhd(Obs,Estimate.A0hat,Estimate.nhat,D,Prior,Delta,DeltaA,B,qhatv);
-
-figure;
-plot(dQdxv,-dAdtv,'o',[minvalt maxvalt],[minvalt maxvalt])
-xlabel('dQ/dx, m^2/s')
-ylabel('-dA/dt, m^2/s')
-title('Q hat')
+plot(Qtv,Qv,'o',[minval maxval],[minval maxval],'LineWidth',2)
+set(gca,'FontSize',14)
+xlabel('True discharge, m^3/s')
+ylabel('Manning discharge with true A_0,n, m^3/s')
+title('Manning applicability check with true parameters')
+% 
+% [f,dQdxv,dAdtv]=CalcLklhd(Obs,Estimate.A0hat,Estimate.nhat,D,Prior,Delta,DeltaA,B,qhatv);
+% 
+% figure(11)
+% plot(dQdxv,-dAdtv,'o',[minvalt maxvalt],[minvalt maxvalt],'LineWidth',2)
+% set(gca,'FontSize',14)
+% xlabel('dQ/dx, m^2/s')
+% ylabel('-dA/dt, m^2/s')
+% title('Q hat')
 
 
 

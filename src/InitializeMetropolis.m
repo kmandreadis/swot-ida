@@ -18,13 +18,13 @@ C.thetaq=nan(D.nR*(D.nt-1),C.N);
 C.thetaq(:,1)=P.meanq;
 thetauq=C.thetaq(:,1);
 
-C.thetaQb=nan(D.nR,C.N);
-C.thetaQb(:,1)=P.meanQbase*ones(D.nR,1);
+C.thetaQb=nan(1,C.N);
+C.thetaQb(:,1)=P.meanQbase*ones(1,1);
 thetauQb=C.thetaQb(:,1);
 
 %Get Random numbers
 rng(R.Seed)
-R.z1=randn(D.nR,C.N); 
+R.z1=randn(1,C.N);  %for Qbase
 R.z2=randn(D.nR,C.N);
 R.z3=randn(D.nR*(D.nt-1),C.N);
 

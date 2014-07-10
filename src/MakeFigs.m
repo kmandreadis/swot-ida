@@ -61,8 +61,11 @@ end
 Qbar=squeeze(mean(mean(C.thetaQ)));
 
 figure(5)
-plot(Qbar); grid on;
-
+plot(Qbar,'LineWidth',2); grid on;
+set(gca,'FontSize',14)
+title('Markov chain on average discharge')
+xlabel('Iteration #')
+ylabel('Discharge m^3/s')
 
 figure(6)
 h=plot(D.t,E.QhatPostf',D.t,Truth.Q,'--','LineWidth',2); 
@@ -71,31 +74,27 @@ for i=1:D.nR,
     set(h(D.nR+i),'Color',Co(i,:));
 end
 set(gca,'FontSize',14)
-xlabel('Time, days')
+if D.t(1)>datenum(1900,0,0,0,0,0);
+    datetick
+else
+    xlabel('Time, days')
+end
 ylabel('Discharge, m^3/s')
 
 figure(7)
-plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
+plot(1:D.nR,Err.QRelErrPrior,'s-',1:D.nR,Err.QRelErrPost,'s-','LineWidth',2);
+set(gca,'FontSize',14)
 xlabel('Reach'); ylabel('Relative error');
 legend('Prior','Posterior',0);
 
 figure(8)
-plot(Qbar,C.LogLike,'o')
+plot(Qbar,C.LogLike,'o'); hold on;
+a=axis; plot(mean(Truth.Q(1,:))*ones(2,1),a(3:4),'r-','LineWidth',2); hold off
 set(gca,'FontSize',14)
 xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
+legend('Markov Chain','Truth',0)
 
-
-% figure(7)
-% plot(mean(C.thetaA0(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
-% plot(mean(Truth.A0)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
-% 
-% figure(8)
-% plot(mean(C.thetan(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
-% plot(mean(Truth.n)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
-% 
-% figure(9)
-% plot(1:C.N,C.LogLike)
 
 
 return
