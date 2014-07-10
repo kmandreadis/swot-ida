@@ -1,6 +1,6 @@
 function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R)
 
-[Delta,DeltaA,B,C,thetauA0,thetaun,thetauq,R]=InitializeMetropolis (D,C,Prior,R);
+[Delta,DeltaA,B,C,thetauA0,thetaun,thetauq,thetauQb,R]=InitializeMetropolis (D,C,Prior,R);
 
 %6.1) initial probability calculations
 pu1=exp(-0.5.*(thetauA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetauA0-Prior.meanA0));
@@ -8,6 +8,9 @@ pu2=exp(-0.5.*(thetaun-Prior.meann)'*diag(Prior.stdn.^-2)*(thetaun-Prior.meann))
 if C.Estimateq,
     pu3=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 end
+v=(Prior.covQbase*Prior.meanQbase)^2;
+[mu,sigma] = logninvstat(Prior.meanQbase,v);
+pu4=prod(lognpdf(thetauQb,mu,sigma));
 
 [fu,dQdx,dAdt]=CalcLklhd(Obs,thetauA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);
 
@@ -42,9 +45,12 @@ for i=1:C.N,
     thetavA0=thetauA0+jmp.stdA0.*R.z1(:,i);   
     thetavA0(thetavA0<jmp.A0min)=jmp.A0min(thetavA0<jmp.A0min);
     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
-    fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);    
+    fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);  
+    
+    Qb=1./thetaun.*thetavA0.^(5/3).*Obs.w(:,1).^(-2/3).*Obs.S(:,1).^0.5;
+    pv4=prod(lognpdf(Qb,mu,sigma));
 
-    MetRatio=exp(fv-fu)*pv1/pu1;
+    MetRatio=exp(fv-fu)*pv1/pu1*exp( log(pv4) - log(pu4) );
     if MetRatio>R.u1(i),
         C.n_a1=C.n_a1+1; %increment
         thetauA0=thetavA0; fu=fv; pu1=pv1; %update u->v     
@@ -56,8 +62,11 @@ for i=1:C.N,
     thetavn(thetavn<jmp.nmin)=jmp.nmin;
     pv2=exp(-0.5.*(thetavn-Prior.meann)'*diag(Prior.stdn.^-2)*(thetavn-Prior.meann));
     fv=CalcLklhd(Obs,thetauA0,thetavn,D,Prior,Delta,DeltaA,B,thetauq);    
+    
+    Qb=1./thetaun.*thetavA0.^(5/3).*Obs.w(:,1).^(-2/3).*Obs.S(:,1).^0.5;
+    pv4=prod(lognpdf(Qb,mu,sigma));    
 
-    MetRatio=exp(fv-fu)*pv2/pu2;
+    MetRatio=exp(fv-fu)*pv2/pu2*exp( log(pv4) - log(pu4) );
     if MetRatio>R.u2(i),
         C.n_a2=C.n_a2+1; %increment
         thetaun=thetavn; fu=fv; pu2=pv2; %update u->v     

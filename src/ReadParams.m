@@ -19,6 +19,10 @@ fgetl(fid); jmp.stdn=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.nmin=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.stdq=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.qmin=fscanf(fid,'%f',1); fscanf(fid,'\n');
+fgetl(fid); Prior.eQm=fscanf(fid,'%f',1); fscanf(fid,'\n');
+fgetl(fid); jmp.stdQ=fscanf(fid,'%f',1); fscanf(fid,'\n');
+fgetl(fid); Prior.meanQbase=fscanf(fid,'%f',1); fscanf(fid,'\n');
+fgetl(fid); Prior.covQbase=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fclose(fid);
 
 return
