@@ -42,11 +42,11 @@ Jw=-2/3.*Delta.*(ones(N,1)*Qv').*(ones(N,1)*Tw');
 J=[JS JdA Jw];
 CdQ=J*Obs.CSdAw*J';
 
-%2.2) Calculate covariance matrix of JA
-% CA=Obs.JAh*Obs.Ch*Obs.JAh'; %Note: JAh computed outside Metropolis loop
+% %2.1.4) Calculate error covariance due to Manning's error
+CdQm=Delta*(eye(M).*Prior.eQm^2)*Delta';
 
 %2.3) Final covariance matrix calculation
-Cf=Obs.CA+CdQ+Prior.Cqf;
+Cf=Obs.CA+CdQ+Prior.Cqf+CdQm;
 
 %3) Calculate likelihood
 Theta=dQdxv+dAdtv-qhatv;

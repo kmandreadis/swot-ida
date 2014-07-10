@@ -52,13 +52,12 @@ for i=1:C.N,
     
     fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);                         
 
-    MetRatio=exp(fv-fu)*pv1/pu1*exp( log(pv4) - log(pu4) );
+    MetRatio=exp(fv-fu)*pv1/pu1*pv4/pu4;
     if MetRatio>R.u1(i),
         C.n_a1=C.n_a1+1; %increment
         thetauQb=thetavQb;pu4=pv4; fu=fv; %update u->v     
         thetauA0=thetavA0; pu1=pv1; %these are sort of "diagnostics"
     end    
-    C.thetaA0(:,i)=thetauA0;
     C.thetaQb(i)=thetauQb;
     
     %n
@@ -78,6 +77,7 @@ for i=1:C.N,
         thetauA0=thetavA0; pu1=pv1; %these are sort of "diagnostics"
     end    
     C.thetan(:,i)=thetaun;    
+    C.thetaA0(:,i)=thetauA0;
     
     if C.Estimateq,
         thetavq=thetauq+jmp.stdq.*R.z3(:,i);
