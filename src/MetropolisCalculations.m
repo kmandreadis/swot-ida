@@ -53,6 +53,7 @@ for i=1:C.N,
     fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);                         
 
     MetRatio=exp(fv-fu)*pv1/pu1*pv4/pu4;
+%     MetRatio=exp(fv-fu)*pv4/pu4;
     if MetRatio>R.u1(i),
         C.n_a1=C.n_a1+1; %increment
         thetauQb=thetavQb;pu4=pv4; fu=fv; %update u->v     
@@ -71,6 +72,7 @@ for i=1:C.N,
     fv=CalcLklhd(Obs,thetavA0,thetavn,D,Prior,Delta,DeltaA,B,thetauq);    
     
     MetRatio=exp(fv-fu)*pv2/pu2*pv1/pu1;
+%     MetRatio=exp(fv-fu)*pv2/pu2;
     if MetRatio>R.u2(i),
         C.n_a2=C.n_a2+1; %increment
         thetaun=thetavn; fu=fv; pu2=pv2; %update u->v  
