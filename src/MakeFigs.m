@@ -2,9 +2,9 @@ function MakeFigs (D,Truth,Prior,C,E,Err)
 
 figure(1)
 if C.Estimateq,
-    n=4;
-else
     n=3;
+else
+    n=2;
 end
 subplot(n,1,1); 
 plot(C.thetaA0'); grid on;
@@ -12,12 +12,8 @@ title('Baseflow cross-sectional area, m^2')
 subplot(n,1,2)
 plot(C.thetan'); grid on;
 title('Roughness coefficient')
-subplot(n,1,3)
-plot(C.thetac2'); grid on;
-title('Dave''s parameter x1: c2')
-
 if C.Estimateq,
-    subplot(n,1,4);
+    subplot(n,1,3);
     plot(mean(C.thetaq)); grid on;
     title('Average q, m2/s')
 end
@@ -47,6 +43,10 @@ for i=1:D.nR,
 end
 
 figure(4)
+if isnan(Truth.n),
+    Truth.n=nan(size(Truth.A0));
+end
+    
 for i=1:D.nR,
     subplot(1,D.nR,i)
     x=linspace(0,max(C.thetan(i,:)),100);
@@ -65,57 +65,45 @@ end
 Qbar=squeeze(mean(mean(C.thetaQ)));
 
 figure(5)
-plot(Qbar,'LineWidth',2); grid on;
-set(gca,'FontSize',14)
-title('Markov chain on average discharge')
-xlabel('Iteration #')
-ylabel('Discharge m^3/s')
-
-figure(6)
-h=plot(D.t,E.QhatPostf',D.t,Truth.Q,'--','LineWidth',2); 
-Co=get(0,'DefaultAxesColorOrder');
-for i=1:D.nR,
-    set(h(D.nR+i),'Color',Co(i,:));
-end
-set(gca,'FontSize',14)
-if D.t(1)>datenum(1900,0,0,0,0,0);
-    datetick
-else
-    xlabel('Time, days')
-end
+plot(Qbar); grid on;
+xlabel('Iteration')
 ylabel('Discharge, m^3/s')
 
-figure(7)
-plot(1:D.nR,Err.QRelErrPrior,'s-',1:D.nR,Err.QRelErrPost,'s-','LineWidth',2);
+hold on;
+plot([1 C.N],mean(mean(Truth.Q))*ones(2,1));
+hold off;
+
+
+figure(6)
+h=plot(D.t,Truth.Q,D.t,E.QhatPostf','LineWidth',2); 
+set(h(1:D.nR),'Color','b');  set(h(D.nR+1:end),'Color','r');
 set(gca,'FontSize',14)
+xlabel('Time, days')
+ylabel('Discharge, m^3/s')
+legend(h([1 end]),'True','MetroMan')
+
+figure(7)
+plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
 xlabel('Reach'); ylabel('Relative error');
 legend('Prior','Posterior',0);
 
 figure(8)
-plot(Qbar,C.LogLike,'o'); hold on;
-a=axis; plot(mean(Truth.Q(1,:))*ones(2,1),a(3:4),'r-','LineWidth',2); hold off
+plot(Qbar,C.LogLike,'o')
 set(gca,'FontSize',14)
 xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
-legend('Markov Chain','Truth',0)
 
-<<<<<<< HEAD
-figure(9)
-for i=1:D.nR,
-    subplot(1,D.nR,i)
-%     x=0:max(C.thetac2(i,:));
-%     y=normpdf(x,Prior.meanc2(i),Prior.stdc2(i));
-%     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
-    hist(C.thetac2(i,C.Nburn+1:end),50); 
-    set(gca,'FontSize',14)
-%     plot(Truth.A0(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2);    
-%     plot(E.A0hat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
-    title(['Reach ' num2str(i)])
-    xlabel('c_2')
-    ylabel('Frequency')
-end
-=======
 
->>>>>>> parent of 438feec... v0: Minor tweaks
+% figure(7)
+% plot(mean(C.thetaA0(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
+% plot(mean(Truth.A0)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
+% 
+% figure(8)
+% plot(mean(C.thetan(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
+% plot(mean(Truth.n)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
+% 
+% figure(9)
+% plot(1:C.N,C.LogLike)
+
 
 return

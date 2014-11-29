@@ -13,21 +13,10 @@ Estimate.qhat=mean(C.thetaq(:,C.Nburn+1:end),2);
 Estimate.Cq=cov(C.thetaq(:,C.Nburn+1:end)');
 Estimate.stdqpost=sqrt(diag(Estimate.Cq));
 
-Estimate.c2hat=mean(C.thetac2(:,C.Nburn+1:end),2);
-Estimate.Cc2=cov(C.thetac2(:,C.Nburn+1:end)');
-Estimate.stdc2Post=sqrt(diag(Estimate.Cc2));
-
-
 %2) calculate the Q chain, and estimate mean and std
 for i=1:C.N,
-%     C.thetaQ(:,:,i) = 1./(C.thetan(:,i)*ones(1,D.nt)) .* ...
-%         (C.thetaA0(:,i)*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S) ;
-    %calculate estimate of variable roughness for this chain estimate
-
-    [~,nvar]=VariableRoughness(Obs,D,C.thetac2(:,i),C.thetan(:,i));
-    
-    C.thetaQ(:,:,i) = 1./(nvar) .* ...
-        (C.thetaA0(:,i)*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S) ;    
+    C.thetaQ(:,:,i) = 1./(C.thetan(:,i)*ones(1,D.nt)) .* ...
+        (C.thetaA0(:,i)*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S) ;
 end
 
 Estimate.QhatPost=mean(C.thetaQ(:,:,C.Nburn+1:end),3);
