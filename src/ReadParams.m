@@ -9,9 +9,12 @@ fgetl(fid); Prior.meanA0=fscanf(fid,'%f',D.nR); fscanf(fid,'\n');
 fgetl(fid); Prior.stdA0=fscanf(fid,'%f',D.nR); fscanf(fid,'\n');
 fgetl(fid); Prior.meann=fscanf(fid,'%f',D.nR); fscanf(fid,'\n');
 fgetl(fid); Prior.stdn=fscanf(fid,'%f',D.nR); fscanf(fid,'\n');
-
 fgetl(fid); Prior.meanq=fscanf(fid,'%f',D.nR*(D.nt-1)); fscanf(fid,'\n');
 fgetl(fid); Prior.stdq=fscanf(fid,'%f',1); fscanf(fid,'\n');
+
+fgetl(fid); Prior.meanc2=fscanf(fid,'%f',D.nR); fscanf(fid,'\n');
+fgetl(fid); Prior.stdc2=fscanf(fid,'%f',D.nR); fscanf(fid,'\n');
+
 fgetl(fid); jmp.stdQbburn=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.stdQbsim=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.Qbmin=fscanf(fid,'%f',1); fscanf(fid,'\n');
@@ -23,6 +26,7 @@ fgetl(fid); Prior.eQm=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); jmp.stdQ=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); Prior.meanQbase=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fgetl(fid); Prior.covQbase=fscanf(fid,'%f',1); fscanf(fid,'\n');
+fgetl(fid); jmp.stdc2=fscanf(fid,'%f',1); fscanf(fid,'\n');
 fclose(fid);
 
 return

@@ -27,9 +27,11 @@ rng(R.Seed)
 R.z1=randn(1,C.N);  %for Qbase
 R.z2=randn(D.nR,C.N);
 R.z3=randn(D.nR*(D.nt-1),C.N);
+R.z5=randn(D.nR,C.N);  %for c2
 
 R.u1=rand(C.N,1); %used for acceptance of A0
 R.u2=rand(C.N,1); %used for acceptance of n
 R.u3=rand(C.N,1); %used for acceptance of q
+R.u5=rand(C.N,1); %used for acceptance of q
 
 return

@@ -2,9 +2,9 @@ function MakeFigs (D,Truth,Prior,C,E,Err)
 
 figure(1)
 if C.Estimateq,
-    n=3;
+    n=4;
 else
-    n=2;
+    n=3;
 end
 subplot(n,1,1); 
 plot(C.thetaA0'); grid on;
@@ -12,8 +12,12 @@ title('Baseflow cross-sectional area, m^2')
 subplot(n,1,2)
 plot(C.thetan'); grid on;
 title('Roughness coefficient')
+subplot(n,1,3)
+plot(C.thetac2'); grid on;
+title('Dave''s parameter x1: c2')
+
 if C.Estimateq,
-    subplot(n,1,3);
+    subplot(n,1,4);
     plot(mean(C.thetaq)); grid on;
     title('Average q, m2/s')
 end
@@ -93,17 +97,19 @@ set(gca,'FontSize',14)
 xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
 
-
-% figure(7)
-% plot(mean(C.thetaA0(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
-% plot(mean(Truth.A0)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
-% 
-% figure(8)
-% plot(mean(C.thetan(:,C.Nburn+1:end)),C.LogLike(C.Nburn+1:end),'o'); hold on;
-% plot(mean(Truth.n)*ones(2,1),get(gca,'YLim'),'r-'); hold off;
-% 
-% figure(9)
-% plot(1:C.N,C.LogLike)
-
+figure(9)
+for i=1:D.nR,
+    subplot(1,D.nR,i)
+%     x=0:max(C.thetac2(i,:));
+%     y=normpdf(x,Prior.meanc2(i),Prior.stdc2(i));
+%     plot(x,y/max(y)*C.N/20,'r--','LineWidth',2); hold on;
+    hist(C.thetac2(i,C.Nburn+1:end),50); 
+    set(gca,'FontSize',14)
+%     plot(Truth.A0(i)*ones(2,1),get(gca,'YLim'),'g-','LineWidth',2);    
+%     plot(E.A0hat(i)*ones(2,1),get(gca,'YLim'),'k--','LineWidth',2); hold off;    
+    title(['Reach ' num2str(i)])
+    xlabel('c_2')
+    ylabel('Frequency')
+end
 
 return

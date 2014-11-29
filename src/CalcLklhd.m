@@ -1,4 +1,4 @@
-function [f,dQdxv,dAdtv,Cq,Cf]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv)
+function [f,dQdxv,dAdtv,Cq,Cf]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv,c2)
 
 %All vectors ordered "space-first"
 % theta(1)=theta(r1,t1)
@@ -11,8 +11,11 @@ function [f,dQdxv,dAdtv,Cq,Cf]=CalcLklhd(Obs,A0,n,D,Prior,Delta,DeltaA,B,qhatv)
 N=D.nR*(D.nt-1); %total number of "equations" / constraints
 M=D.nR*D.nt;
 
+%timeseries of n
+nv=VariableRoughness(Obs,D,c2,n);
+
 A0v=reshape((A0*ones(1,D.nt))',D.nR*D.nt,1);
-nv=reshape((n*ones(1,D.nt))',D.nR*D.nt,1);
+% nv=reshape((n*ones(1,D.nt))',D.nR*D.nt,1);
 Qv=1./nv.*(A0v+Obs.dAv).^(5/3).*Obs.wv.^(-2/3).*sqrt(Obs.Sv);
 
 if any(Obs.hv)<0 || any(A0v)<0 || any(Obs.Sv)<0,
@@ -36,7 +39,6 @@ Tw=Obs.wv.^-1;
 JS=.5.*Delta.*(ones(N,1)*Qv').*(ones(N,1)*TSv');
 JdA=5/3.*Delta.*(ones(N,1)*Qv').*(ones(N,1)*TdAv');
 Jw=-2/3.*Delta.*(ones(N,1)*Qv').*(ones(N,1)*Tw');
-
 
 %2.1.3) Covariance matrix calculation
 J=[JS JdA Jw];
