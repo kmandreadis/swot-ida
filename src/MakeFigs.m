@@ -47,10 +47,6 @@ for i=1:D.nR,
 end
 
 figure(4)
-if isnan(Truth.n),
-    Truth.n=nan(size(Truth.A0));
-end
-    
 for i=1:D.nR,
     subplot(1,D.nR,i)
     x=linspace(0,max(C.thetan(i,:)),100);
@@ -69,34 +65,41 @@ end
 Qbar=squeeze(mean(mean(C.thetaQ)));
 
 figure(5)
-plot(Qbar); grid on;
-xlabel('Iteration')
-ylabel('Discharge, m^3/s')
-
-hold on;
-plot([1 C.N],mean(mean(Truth.Q))*ones(2,1));
-hold off;
-
+plot(Qbar,'LineWidth',2); grid on;
+set(gca,'FontSize',14)
+title('Markov chain on average discharge')
+xlabel('Iteration #')
+ylabel('Discharge m^3/s')
 
 figure(6)
-h=plot(D.t,Truth.Q,D.t,E.QhatPostf','LineWidth',2); 
-set(h(1:D.nR),'Color','b');  set(h(D.nR+1:end),'Color','r');
+h=plot(D.t,E.QhatPostf',D.t,Truth.Q,'--','LineWidth',2); 
+Co=get(0,'DefaultAxesColorOrder');
+for i=1:D.nR,
+    set(h(D.nR+i),'Color',Co(i,:));
+end
 set(gca,'FontSize',14)
-xlabel('Time, days')
+if D.t(1)>datenum(1900,0,0,0,0,0);
+    datetick
+else
+    xlabel('Time, days')
+end
 ylabel('Discharge, m^3/s')
-legend(h([1 end]),'True','MetroMan')
 
 figure(7)
-plot(1:D.nR,Err.QRelErrPrior,'.-',1:D.nR,Err.QRelErrPost,'.-');
+plot(1:D.nR,Err.QRelErrPrior,'s-',1:D.nR,Err.QRelErrPost,'s-','LineWidth',2);
+set(gca,'FontSize',14)
 xlabel('Reach'); ylabel('Relative error');
 legend('Prior','Posterior',0);
 
 figure(8)
-plot(Qbar,C.LogLike,'o')
+plot(Qbar,C.LogLike,'o'); hold on;
+a=axis; plot(mean(Truth.Q(1,:))*ones(2,1),a(3:4),'r-','LineWidth',2); hold off
 set(gca,'FontSize',14)
 xlabel('Average discharge, m^3/s')
 ylabel('Log of likelihood')
+legend('Markov Chain','Truth',0)
 
+<<<<<<< HEAD
 figure(9)
 for i=1:D.nR,
     subplot(1,D.nR,i)
@@ -111,5 +114,8 @@ for i=1:D.nR,
     xlabel('c_2')
     ylabel('Frequency')
 end
+=======
+
+>>>>>>> parent of 438feec... v0: Minor tweaks
 
 return
