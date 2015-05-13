@@ -1,5 +1,8 @@
 function [mu,sigma] = logninvstat(m,v)
 
+% Usage:
+%  [mu,sigma] = logninvstat(m,v)
+%
 %notation from the Matlab documentation for the log-normal pdf. given the 
 %mean (m) and variance (v) or a lognormal distribution, calculate
 %the mean (mu) and standard deviation (sigma) of the associated normal

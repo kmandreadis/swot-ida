@@ -1,17 +1,20 @@
-function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R)
+function [C] = MetropolisCalculations(Prior,D,Obs,jmp,C,R,DAll,AllObs)
 
-[Delta,DeltaA,B,C,~,thetaun,thetauq,thetauQb,R]=InitializeMetropolis (D,C,Prior,R);
+[Delta,DeltaA,B,C,~,thetaun,thetauq,thetauQbar,R]=InitializeMetropolis (D,C,Prior,R);
 
 %6.1) initial probability calculations
 thetauA0=( Prior.meanQbase.*Prior.meann.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
+thetauA0(thetauA0<jmp.A0min)=jmp.A0min(thetauA0<jmp.A0min)*1.1; %sketchy
 pu1=exp(-0.5.*(thetauA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetauA0-Prior.meanA0));
 pu2=exp(-0.5.*(thetaun-Prior.meann)'*diag(Prior.stdn.^-2)*(thetaun-Prior.meann));
 if C.Estimateq,
     pu3=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 end
-v=(Prior.covQbase*Prior.meanQbase)^2;
-[mu,sigma] = logninvstat(Prior.meanQbase,v);
-pu4=prod(lognpdf(thetauQb,mu,sigma));
+v=(Prior.covQbar*Prior.meanQbar)^2;
+[mu,sigma] = logninvstat(Prior.meanQbar,v);
+pu4=lognpdf(thetauQbar,mu,sigma);
+
+thetauQb=Prior.meanQbase;
 
 [fu,dQdx,dAdt]=CalcLklhd(Obs,thetauA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);
 
@@ -22,9 +25,9 @@ if Prior.meanq==-1,
     pu3=exp(-0.5.*(thetauq-Prior.meanq)'*diag(Prior.stdq.^-2)*(thetauq-Prior.meanq));
 end
 
-%6.2) Validity check on A0 min: ensure no A=A0+dA values
-% jmp.A0min=max(jmp.A0min, ceil(-min(Obs.dA,[],2)) );
-% While the above is now obsolete may need to add a similar check
+%6.2) Validity check on A0 min: ensure no A=A0+dA values... this is now
+%done in "ProcessPrior", and checks against entire Obs timeseries
+% jmp.A0min=ceil(-min(Obs.dA,[],2));
 
 %6.3) The loop
 tic
@@ -45,34 +48,50 @@ for i=1:C.N,
     end
     
     thetavQb=thetauQb+jmp.stdQb.*R.z1(1,i);   
-    thetavQb(thetavQb<jmp.Qbmin)=jmp.Qbmin(thetavQb<jmp.Qbmin); %could scalarize this line, but fine as is
-    pv4=prod(lognpdf(thetavQb,mu,sigma));
+    thetavQb(thetavQb<jmp.Qbmin)=jmp.Qbmin(thetavQb<jmp.Qbmin); %could scalarize this line, but fine as is    
     thetavA0=( thetavQb.*thetaun.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
-    pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
     
+    Qhatv = mean(mean(1./(thetaun*ones(1,DAll.nt)) .* ...
+        ( (thetauA0-AllObs.A0Shift)*ones(1,DAll.nt)+AllObs.dA).^(5/3).*...
+        AllObs.w.^(-2/3).*sqrt(AllObs.S) ));
+        
+    pv4=lognpdf(Qhatv,mu,sigma);
+    
+    pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));    
+    if any(thetavA0<jmp.A0min),
+        pv1=0;
+    end
     fv=CalcLklhd(Obs,thetavA0,thetaun,D,Prior,Delta,DeltaA,B,thetauq);                         
 
-    MetRatio=exp(fv-fu)*pv1/pu1*pv4/pu4;
-%     MetRatio=exp(fv-fu)*pv4/pu4;
+%     MetRatio=exp(fv-fu)*pv1/pu1*pv4/pu4;
+    MetRatio=exp(fv-fu)*pv4/pu4;
+    if pv1==0,
+        MetRatio=0;
+    end
     if MetRatio>R.u1(i),
         C.n_a1=C.n_a1+1; %increment
-        thetauQb=thetavQb;pu4=pv4; fu=fv; %update u->v     
+        thetauQbar=thetavQb;pu4=pv4; fu=fv; %update u->v     
         thetauA0=thetavA0; pu1=pv1; %these are sort of "diagnostics"
     end    
-    C.thetaQb(i)=thetauQb;
+    C.thetaQb(i)=thetauQbar;
     
     %n
     thetavn=thetaun+jmp.stdn.*R.z2(:,i);
     thetavn(thetavn<jmp.nmin)=jmp.nmin;
     pv2=exp(-0.5.*(thetavn-Prior.meann)'*diag(Prior.stdn.^-2)*(thetavn-Prior.meann));
     
-    thetavA0=( thetauQb.*thetavn.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
+    thetavA0=( thetauQbar.*thetavn.*Obs.w(:,1).^(2/3).*Obs.S(:,1).^(-.5) ).^(3/5);
     pv1=exp(-0.5.*(thetavA0-Prior.meanA0)'*diag(Prior.stdA0.^-2)*(thetavA0-Prior.meanA0));        
-    
+    if any(thetavA0<jmp.A0min),
+        pv1=0;
+    end
     fv=CalcLklhd(Obs,thetavA0,thetavn,D,Prior,Delta,DeltaA,B,thetauq);    
     
-    MetRatio=exp(fv-fu)*pv2/pu2*pv1/pu1;
-%     MetRatio=exp(fv-fu)*pv2/pu2;
+%     MetRatio=exp(fv-fu)*pv2/pu2*pv1/pu1;
+    MetRatio=exp(fv-fu)*pv2/pu2;
+    if pv1==0,
+        MetRatio=0;
+    end
     if MetRatio>R.u2(i),
         C.n_a2=C.n_a2+1; %increment
         thetaun=thetavn; fu=fv; pu2=pv2; %update u->v  

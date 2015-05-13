@@ -1,4 +1,4 @@
-function [Estimate,C] = CalculateEstimates (C,D,Obs,Prior)
+function [Estimate,C] = CalculateEstimates (C,D,Obs,Prior,DAll,AllObs)
 
 % 1) estimates on the chain A0, n, q: means & covariances
 Estimate.A0hat=mean(C.thetaA0(:,C.Nburn+1:end),2);
@@ -25,6 +25,9 @@ Estimate.QstdPost=std(C.thetaQ(:,:,C.Nburn+1:end),[],3);
 %3) Calculate Q prior estimate
 Estimate.QhatPrior=1./(Prior.meann*ones(1,D.nt)) .* ...
     (Prior.meanA0*ones(1,D.nt)+Obs.dA).^(5/3).*Obs.w.^(-2/3).*sqrt(Obs.S);
+Estimate.QhatAllPrior=1./(Prior.meann*ones(1,DAll.nt)) .* ...
+    (Prior.meanA0*ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S);
+
 
 %4)   Discharge error budget: all done for Q(nr x nt)
 %4.1) Uncertainty estimate of the dA term
@@ -65,5 +68,11 @@ Estimate.QerrVarSum(1:D.nR,2)=mean(Estimate.QhatUnc.A0,2);
 Estimate.QerrVarSum(1:D.nR,3)=mean(Estimate.QhatUnc.dA,2);
 Estimate.QerrVarSum(1:D.nR,4)=mean(Estimate.QhatUnc.w,2);
 Estimate.QerrVarSum(1:D.nR,5)=mean(Estimate.QhatUnc.S,2);
+
+%5 all estimates
+
+Estimate.AllQ = 1./(Estimate.nhat*ones(1,DAll.nt)) .* ...
+        ( (Estimate.A0hat-AllObs.A0Shift)*ones(1,DAll.nt)+AllObs.dA).^(5/3).*AllObs.w.^(-2/3).*sqrt(AllObs.S) ;
+
 
 return

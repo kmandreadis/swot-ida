@@ -1,4 +1,4 @@
-function [Err]=CalcErrorStats (Truth,Prior,E)
+function [Err]=DispRMSEStats (Err,Truth,Prior,E)
 
 %Quick Error stats
 Err.RelErrA0=mean(E.A0hat'-Truth.A0)./mean(Truth.A0);
@@ -41,6 +41,10 @@ fprintf('Average RMS for Q posterior: %.3f\n', mean(Err.QRelErrPost))
 
 fprintf('Average relative Q uncertainty: %.3f\n', ...
     mean(mean(E.QstdPost./E.QhatPost)) )
+
+fprintf('For entire timeseries, rRMSE= %.2f, and relative bias= %.2f\n',[Err.Stats.rRMSE Err.Stats.meanRelRes]);
+
+fprintf('For entire timeseries, RMSE/Qbart= %.2f, and bias/Qbart= %.2f\n',[Err.Stats.RMSE/Err.Stats.Qbart Err.Stats.bias/Err.Stats.Qbart]);
 
 fprintf('\n')
 
