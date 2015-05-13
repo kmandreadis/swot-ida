@@ -1,0 +1,46 @@
+Chain length
+10000
+Burn in
+2000
+Random Number Seed
+9
+Estimate lateral inflows (true or false) <- use "true" at your own risk
+0
+Number of times to use in estimate
+31
+Times to use in estimate
+ 10    11    12    13    14    15    16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31    32    33    34    35    36    37    38    39    40
+Prior on A0 m2: this is currently calculated using Qbase
+NaN NaN NaN NaN NaN NaN NaN NaN NaN
+Standard deviation on A0 m2
+NaN NaN NaN NaN NaN NaN NaN NaN NaN
+Mean  on roughness coefficient 
+0.03 0.03 0.03 0.03 0.03 0.03 0.03 0.03 0.03
+Standard deviation on roughness coefficient
+.001 .001 .001 .001 .001 .001 .001 .001 .001 
+Prior on lateral inflows m2/s (Use 0; if -1 then estimated from channel mass bal)
+0
+Standard deviation on lateral inflows m2/s
+0
+Jump standard deviation for  mean (burn in) m3/s
+200
+Jump standard deviation for Q mean (simulation) m3/s
+5
+Minimum value for Qbase m3/s
+25
+Jump standard deviation for roughness coefficient 
+.0005
+Minimum value for roughness coefficient 
+.001
+Jump standard deviation for lateral inflows m2/s
+1E-5
+Minimum value for lateral inflows m2/s
+-10E-3
+Error in Manning’s equation m3/s
+0
+Jump standard deviation for Q corrector
+NaN
+Prior mean on mean discharge [m3/s]
+377
+Prior coefficient of variation on mean flow [fraction]
+1
